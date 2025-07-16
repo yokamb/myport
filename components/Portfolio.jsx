@@ -419,7 +419,7 @@ const Portfolio = () => {
     <form
       name="contact"
       method="POST"
-      data-netlify="true"
+      netlify
       netlify-honeypot="bot-field"
       className="grid grid-cols-1 lg:grid-cols-2 gap-12"
     >
