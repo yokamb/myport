@@ -157,6 +157,30 @@ const Portfolio = () => {
     }
     setIsMenuOpen(false);
   };
+// 4.1 Set up form data and status
+const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+const [status, setStatus] = useState(null); // 'sending' | 'success' | 'error'
+
+// 4.2 The function to run when the form is submitted
+const handleSubmit = async (e) => {
+  e.preventDefault();            // stop the page from reloading
+  setStatus("sending");          // show a “sending...” state
+
+  try {
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+    if (!response.ok) throw new Error("Network error");
+
+    setStatus("success");        // show a success message
+    setFormData({ name: "", email: "", message: "" }); // clear form
+  } catch (err) {
+    console.error(err);
+    setStatus("error");          // show an error message
+  }
+};
 
   return (
     <div className="min-h-screen bg-white">
@@ -405,93 +429,121 @@ const Portfolio = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-20 bg-blue-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>
-            <p className="text-lg text-blue-100">
-              Ready to transform your Microsoft 365 environment? Let's discuss your project.
-            </p>
+{/* Contact Section */}
+<section id="contact" className="py-20 bg-blue-600 text-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center mb-16">
+      <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>
+      <p className="text-lg text-blue-100">
+        Ready to transform your Microsoft 365 environment? Let’s discuss your project.
+      </p>
+    </div>
+
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      {/* ← Column 1: Contact Info (unchanged) */}
+      <div>
+        <h3 className="text-2xl font-semibold mb-6">Contact Information</h3>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Mail className="w-5 h-5 text-blue-200" />
+            <a
+              href={`mailto:${config.email}`}
+              className="underline hover:text-blue-100"
+            >
+              {config.email}
+            </a>
           </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div>
-              <h3 className="text-2xl font-semibold mb-6">Contact Information</h3>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                    <Mail className="w-5 h-5 text-blue-200" />
-                    <a
-                        href={`mailto:${config.email}`}
-                        className="underline hover:text-blue-100"
-                    >
-                        {config.email}
-                    </a>
-                </div>
-                <div className="flex items-center gap-3">
-                    <Phone className="w-5 h-5 text-blue-200" />
-                    <a
-                        href={`tel:${config.phone.replace(/[^+\d]/g, "")}`}
-                        className="underline hover:text-blue-100"
-                    >
-                        {config.phone}
-                    </a>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 text-blue-200" />
-                  <span>{config.location}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                <Linkedin className="w-5 h-5 text-blue-200" />
-                    <a
-                    href={config.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:text-blue-100"
-                    >
-                        {config.linkedin}
-                    </a>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Name</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
-                    placeholder="Your name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Email</label>
-                  <input
-                    type="email"
-                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
-                    placeholder="Your email"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Message</label>
-                  <textarea
-                    rows="4"
-                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
-                    placeholder="Your message"
-                  ></textarea>
-                </div>
-                <button
-                  onClick={() => alert('Thank you for your message! I will get back to you soon.')}
-                  className="w-full bg-white text-blue-600 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-                >
-                  Send Message
-                </button>
-              </div>
-            </div>
+          <div className="flex items-center gap-3">
+            <Phone className="w-5 h-5 text-blue-200" />
+            <a
+              href={`tel:${config.phone.replace(/[^+\d]/g, "")}`}
+              className="underline hover:text-blue-100"
+            >
+              {config.phone}
+            </a>
+          </div>
+          <div className="flex items-center gap-3">
+            <MapPin className="w-5 h-5 text-blue-200" />
+            <span>{config.location}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Linkedin className="w-5 h-5 text-blue-200" />
+            <a
+              href={config.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-blue-100"
+            >
+              {config.linkedin}
+            </a>
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* ← Column 2: Controlled Contact Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium mb-2">
+            Name
+          </label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder="Your name"
+            className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+          />
+        </div>
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium mb-2">
+            Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            placeholder="Your email"
+            className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+          />
+        </div>
+        <div>
+          <label htmlFor="message" className="block text-sm font-medium mb-2">
+            Message
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            rows="4"
+            required
+            value={formData.message}
+            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            placeholder="Your message"
+            className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={status === "sending"}
+          className="w-full bg-white text-blue-600 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
+        >
+          {status === "sending" ? "Sending..." : "Send Message"}
+        </button>
+        {status === "success" && (
+          <p className="text-green-300">Thank you! I will get back to you soon.</p>
+        )}
+        {status === "error" && (
+          <p className="text-red-300">Oops! Something went wrong. Please try again.</p>
+        )}
+      </form>
+    </div>
+  </div>
+</section>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-8">

@@ -6,30 +6,82 @@ export default function Contact() {
     </div>
   );
 }
-// pages/api/contact.js
-import sendgrid from "@sendgrid/mail";
+// pages/contact.js
+import React, { useState } from "react";
 
-sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+export default function Contact() {
+  // 2.1 State for form and status
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus]     = useState(null); // 'sending' | 'success' | 'error'
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).end(); // Method Not Allowed
-  }
-  const { name, email, message } = req.body;
+  // 2.2 Submit handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) throw new Error("Network response was not ok");
+      setStatus("success");
+      setFormData({ name: "", email: "", message: "" });
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+    }
+  };
 
-  try {
-    await sendgrid.send({
-      to: "yogesh@batein.com",       // your inbox
-      from: "no-reply@batein.com",   // verified sender
-      subject: `New message from ${name}`,
-      text: message,
-      html: `<p><strong>Name:</strong> ${name}</p>
-             <p><strong>Email:</strong> ${email}</p>
-             <p><strong>Message:</strong><br/>${message}</p>`,
-    });
-    return res.status(200).json({ success: true });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Email not sent" });
-  }
+  return (
+    <div className="min-h-screen p-8 bg-blue-600 text-white">
+      <h1 className="text-4xl font-bold mb-6">Get In Touch</h1>
+      <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-4">
+        <div>
+          <label htmlFor="name" className="block mb-1">Name</label>
+          <input
+            id="name" name="name" type="text" required
+            value={formData.name}
+            onChange={e => setFormData({ ...formData, name: e.target.value })}
+            placeholder="Your name"
+            className="w-full p-3 rounded bg-white/20 placeholder-white/70"
+          />
+        </div>
+        <div>
+          <label htmlFor="email" className="block mb-1">Email</label>
+          <input
+            id="email" name="email" type="email" required
+            value={formData.email}
+            onChange={e => setFormData({ ...formData, email: e.target.value })}
+            placeholder="Your email"
+            className="w-full p-3 rounded bg-white/20 placeholder-white/70"
+          />
+        </div>
+        <div>
+          <label htmlFor="message" className="block mb-1">Message</label>
+          <textarea
+            id="message" name="message" rows="4" required
+            value={formData.message}
+            onChange={e => setFormData({ ...formData, message: e.target.value })}
+            placeholder="Your message"
+            className="w-full p-3 rounded bg-white/20 placeholder-white/70"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={status === "sending"}
+          className="w-full bg-white text-blue-600 p-3 rounded font-medium"
+        >
+          {status === "sending" ? "Sending…" : "Send Message"}
+        </button>
+
+        {status === "success" && (
+          <p className="mt-4 text-green-300">Thank you! I will get back to you soon.</p>
+        )}
+        {status === "error" && (
+          <p className="mt-4 text-red-300">Oops! Something went wrong. Please try again.</p>
+        )}
+      </form>
+    </div>
+  );
 }
