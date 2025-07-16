@@ -1,20 +1,12 @@
-export default function Contact() {
-  return (
-    <div className="min-h-screen p-8">
-      <h1 className="text-4xl font-bold mb-4">Contact</h1>
-      <p className="text-lg text-gray-700">Coming soon…</p>
-    </div>
-  );
-}
 // pages/contact.js
 import React, { useState } from "react";
 
 export default function Contact() {
-  // 2.1 State for form and status
+  // Form state & status
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [status, setStatus]     = useState(null); // 'sending' | 'success' | 'error'
 
-  // 2.2 Submit handler
+  // Submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("sending");
@@ -27,8 +19,7 @@ export default function Contact() {
       if (!res.ok) throw new Error("Network response was not ok");
       setStatus("success");
       setFormData({ name: "", email: "", message: "" });
-    } catch (err) {
-      console.error(err);
+    } catch {
       setStatus("error");
     }
   };
